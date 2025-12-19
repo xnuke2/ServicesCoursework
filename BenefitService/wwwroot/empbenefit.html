@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление льготами сотрудников</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-list {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        .form-section, .list-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-update {
+            background: #2ecc71;
+        }
+
+        .btn-update:hover {
+            background: #27ae60;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #e74c3c;
+            position: relative;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #d5f4e6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+            position: relative;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        .refresh-btn {
+            background: #f39c12;
+        }
+
+        .refresh-btn:hover {
+            background: #e67e22;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 15px;
+        }
+
+        .date-range .form-group {
+            flex: 1;
+        }
+
+        .employee-benefit-id {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .status-active {
+            background-color: #d5f4e6;
+            color: #27ae60;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-expired {
+            background-color: #fdf2f2;
+            color: #e74c3c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<script>
+    (async function() {
+        try {
+            const response = await fetch('/Benefit/all', {
+                credentials: 'include'
+            });
+
+            if (response.status === 401) {
+                const returnUrl = encodeURIComponent(window.location.pathname);
+                window.location.href = `https://localhost:8082/login?returnUrl=${returnUrl}`;
+                return;
+            }
+
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            const returnUrl = encodeURIComponent(window.location.pathname);
+            window.location.href = `https://localhost:8082/login?returnUrl=${returnUrl}`;
+        }
+    })();
+</script>
+<header>
+    <h1>📋 Управление льготами сотрудников</h1>
+    <p>Система управления льготами сотрудников</p>
+    <nav class="nav-menu">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="http://localhost:8080/" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Сотрудники
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8080/divisions" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Подразделения
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8080/role" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Должности
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8081" class="nav-link">
+                    Льготы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8081/EmployeeBenefit" class="nav-link active">
+                    Льготы сотрудников
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container">
+    <section class="form-section">
+        <h2>Добавить / Редактировать льготу сотрудника</h2>
+
+        <div id="message"></div>
+
+        <form id="employeeBenefitForm">
+            <input type="hidden" id="employeeBenefitId">
+
+            <div class="form-group">
+                <label for="employeeId">Сотрудник:</label>
+                <select id="employeeId" required>
+                    <option value="">Выберите сотрудника...</option>
+                    <!-- Сотрудники будут загружены динамически -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="benefitId">Льгота:</label>
+                <select id="benefitId" required>
+                    <option value="">Выберите льготу...</option>
+                    <!-- Льготы будут загружены динамически -->
+                </select>
+            </div>
+
+            <div class="date-range">
+                <div class="form-group">
+                    <label for="startDate">Дата начала:</label>
+                    <input type="date" id="startDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endDate">Дата окончания:</label>
+                    <input type="date" id="endDate">
+                    <div class="info-text">Оставьте пустым, если бессрочно</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn" id="submitBtn">Добавить льготу</button>
+                <button type="button" class="btn btn-secondary" id="clearBtn">Очистить форму</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="list-section">
+        <h2>Список льгот сотрудников</h2>
+
+        <div class="button-group">
+            <button class="btn refresh-btn" onclick="loadEmployeeBenefits()">🔄 Обновить список</button>
+            <button class="btn" onclick="loadEmployeesAndBenefits()">🔄 Загрузить справочники</button>
+        </div>
+
+        <div id="loading" class="loading">Загрузка данных...</div>
+
+        <table id="employeeBenefitsTable" style="display: none;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Сотрудник</th>
+                <th>Льгота</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="employeeBenefitsTableBody"></tbody>
+        </table>
+    </section>
+</div>
+
+<footer>
+    <p>Employee Benefit Management System © 2024</p>
+</footer>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8081';
+    const EMPLOYEE_API_URL = 'http://localhost:8080';
+
+    let employees = [];
+    let benefits = [];
+    let employeeBenefits = [];
+
+    async function init() {
+        try {
+            // Загружаем справочники
+            await loadEmployeesAndBenefits();
+            // Загружаем список льгот сотрудников
+            await loadEmployeeBenefits();
+
+            setupForm();
+        } catch (error) {
+            console.error('Initialization failed:', error);
+            showMessage('Ошибка инициализации: ' + error.message, 'error');
+        }
+    }
+
+    async function loadEmployeesAndBenefits() {
+        try {
+            // Загружаем сотрудников
+            const employeesResponse = await fetch(`${EMPLOYEE_API_URL}/Employee/all`,{
+                credentials: 'include'
+            });
+            if (!employeesResponse.ok) throw new Error('Ошибка загрузки сотрудников');
+            employees = await employeesResponse.json();
+
+            // Загружаем льготы
+            const benefitsResponse = await fetch(`${API_BASE_URL}/Benefit/all`);
+            if (!benefitsResponse.ok) throw new Error('Ошибка загрузки льгот');
+            benefits = await benefitsResponse.json();
+
+            // Заполняем выпадающие списки
+            populateEmployeeSelect();
+            populateBenefitSelect();
+
+
+        } catch (error) {
+            console.error('Error loading reference data:', error);
+            showMessage('Ошибка загрузки справочников: ' + error.message, 'error');
+        }
+    }
+
+    function populateEmployeeSelect() {
+        const select = document.getElementById('employeeId');
+        select.innerHTML = '<option value="">Выберите сотрудника...</option>';
+
+        employees.forEach(employee => {
+            const option = document.createElement('option');
+            option.value = employee.id;
+            option.textContent = `${employee.surname} ${employee.name} ${employee.patronymic || ''}`;
+            select.appendChild(option);
+        });
+    }
+
+    function populateBenefitSelect() {
+        const select = document.getElementById('benefitId');
+        select.innerHTML = '<option value="">Выберите льготу...</option>';
+
+        benefits.forEach(benefit => {
+            const option = document.createElement('option');
+            option.value = benefit.id;
+            option.textContent = `${benefit.name} (+${benefit.addDay} дней)`;
+            select.appendChild(option);
+        });
+    }
+
+    async function loadEmployeeBenefits() {
+        const loading = document.getElementById('loading');
+        const table = document.getElementById('employeeBenefitsTable');
+        const tableBody = document.getElementById('employeeBenefitsTableBody');
+
+        loading.style.display = 'block';
+        table.style.display = 'none';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/EmployeeBenefit/all`);
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+            employeeBenefits = await response.json();
+
+            tableBody.innerHTML = '';
+
+            if (employeeBenefits.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            Нет данных о льготах сотрудников
+                        </td>
+                    </tr>
+                `;
+            } else {
+                employeeBenefits.forEach(employeeBenefit => {
+                    const employee = employees.find(e => e.id === employeeBenefit.employeeId);
+                    const benefit = benefits.find(b => b.id === employeeBenefit.benefitsId);
+                    const status = getStatus(employeeBenefit.endDate);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="employee-benefit-id">${employeeBenefit.id}</td>
+                        <td>${employee ? `${employee.surname} ${employee.name} ${employee.patronymic || ''}` : 'Неизвестно'}</td>
+                        <td>${benefit ? benefit.name : 'Неизвестно'}</td>
+                        <td>${formatDate(employeeBenefit.startDate)}</td>
+                        <td>${employeeBenefit.endDate ? formatDate(employeeBenefit.endDate) : 'Бессрочно'}</td>
+                        <td><span class="${status.class}">${status.text}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editEmployeeBenefit(${employeeBenefit.id})">
+                                    ✏️ Редактировать
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteEmployeeBenefit(${employeeBenefit.id})">
+                                    🗑️ Удалить
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            loading.style.display = 'none';
+            table.style.display = 'table';
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            loading.innerHTML = '<div class="error">Ошибка при загрузке данных</div>';
+        }
+    }
+
+    function getStatus(endDate) {
+        if (!endDate) {
+            return { class: 'status-active', text: 'Активна' };
+        }
+
+        const today = new Date();
+        const end = new Date(endDate);
+
+        if (end < today) {
+            return { class: 'status-expired', text: 'Истекла' };
+        } else {
+            return { class: 'status-active', text: 'Активна' };
+        }
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU');
+    }
+
+    function setupForm() {
+        const form = document.getElementById('employeeBenefitForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('employeeBenefitId').value;
+            const employeeId = document.getElementById('employeeId').value;
+            const benefitId = document.getElementById('benefitId').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!employeeId || !benefitId || !startDate) {
+                showMessage('Все обязательные поля должны быть заполнены', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Сохранение...';
+
+            try {
+                if (id) {
+                    // Обновление существующей льготы сотрудника
+                    await updateEmployeeBenefit(id, {
+                        employeeId: parseInt(employeeId),
+                        benefitsId: parseInt(benefitId),
+                        startDate,
+                        endDate: endDate || null
+                    });
+                } else {
+                    // Добавление новой льготы сотрудника
+                    await createEmployeeBenefit({
+                        employeeId: parseInt(employeeId),
+                        benefitsId: parseInt(benefitId),
+                        startDate,
+                        endDate: endDate || null
+                    });
+                }
+
+                clearForm();
+                loadEmployeeBenefits();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showMessage('Ошибка при сохранении: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = id ? 'Обновить льготу' : 'Добавить льготу';
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', clearForm);
+    }
+
+    async function createEmployeeBenefit(employeeBenefit) {
+        const response = await fetch(`${API_BASE_URL}/EmployeeBenefit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employeeBenefit)
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        showMessage('Льгота сотрудника успешно добавлена', 'success');
+        return await response.json();
+    }
+
+    async function updateEmployeeBenefit(id, employeeBenefit) {
+        const response = await fetch(`${API_BASE_URL}/EmployeeBenefit`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: parseInt(id), ...employeeBenefit })
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        showMessage('Льгота сотрудника успешно обновлена', 'success');
+        return await response.json();
+    }
+
+    async function deleteEmployeeBenefit(id) {
+        if (!confirm('Вы уверены, что хотите удалить эту льготу сотрудника?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/EmployeeBenefit/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            showMessage('Льгота сотрудника успешно удалена', 'success');
+            loadEmployeeBenefits();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showMessage('Ошибка при удалении: ' + error.message, 'error');
+        }
+    }
+
+    async function editEmployeeBenefit(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/EmployeeBenefit/${id}`);
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+            const employeeBenefit = await response.json();
+
+            document.getElementById('employeeBenefitId').value = employeeBenefit.id;
+            document.getElementById('employeeId').value = employeeBenefit.employeeId;
+            document.getElementById('benefitId').value = employeeBenefit.benefitsId;
+            document.getElementById('startDate').value = formatDateForInput(employeeBenefit.startDate);
+            document.getElementById('endDate').value = formatDateForInput(employeeBenefit.endDate);
+
+            document.getElementById('submitBtn').innerHTML = 'Обновить льготу';
+            document.getElementById('submitBtn').classList.add('btn-update');
+
+            showMessage('Редактирование льготы сотрудника #' + employeeBenefit.id, 'success');
+
+            // Прокрутка к форме
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showMessage('Ошибка при загрузке льготы сотрудника: ' + error.message, 'error');
+        }
+    }
+
+    function formatDateForInput(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+    }
+
+    function clearForm() {
+        document.getElementById('employeeBenefitForm').reset();
+        document.getElementById('employeeBenefitId').value = '';
+        document.getElementById('submitBtn').innerHTML = 'Добавить льготу';
+        document.getElementById('submitBtn').classList.remove('btn-update');
+        showMessage('Форма очищена', 'success');
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = `
+            <div class="${type}">
+                ${text}
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+            </div>
+        `;
+
+        setTimeout(() => {
+            if (messageDiv.firstChild) {
+                messageDiv.firstChild.remove();
+            }
+        }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

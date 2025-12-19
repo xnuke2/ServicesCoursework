@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление должностями</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 1.2em;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-list {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        .form-section, .list-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-update {
+            background: #3498db;
+        }
+
+        .btn-update:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #e74c3c;
+            position: relative;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #d5f4e6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+            position: relative;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .role-id {
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #219653;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>💼 Управление должностями</h1>
+    <p>Система управления должностями сотрудников</p>
+
+    <nav class="nav-menu">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="http://localhost:8080/" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Сотрудники
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8080/divisions" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Подразделения
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8080/role" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Должности
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8081" class="nav-link">
+                    Льготы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8081/EmployeeBenefit" class="nav-link active">
+                    Льготы сотрудников
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<script>
+    (async function() {
+        try {
+            const response = await fetch('/api/auth/check', {
+                credentials: 'include'
+            });
+
+            if (response.status === 401) {
+                const returnUrl = encodeURIComponent(window.location.pathname);
+                window.location.href = `https://localhost:8082/login?returnUrl=${returnUrl}`;
+                return;
+            }
+
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            const returnUrl = encodeURIComponent(window.location.pathname);
+            window.location.href = `https://localhost:8082/login?returnUrl=${returnUrl}`;
+        }
+    })();
+</script>
+<div class="container">
+    <section class="form-section">
+        <h2>Добавить / Редактировать должность</h2>
+
+        <div id="message"></div>
+
+        <form id="roleForm">
+            <input type="hidden" id="roleId">
+
+            <div class="form-group">
+                <label for="name">Название должности:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn" id="submitBtn">Добавить должность</button>
+                <button type="button" class="btn btn-secondary" id="clearBtn">Очистить форму</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="list-section">
+        <h2>Список должностей</h2>
+
+        <div class="button-group">
+            <button class="btn" onclick="loadRoles()">🔄 Обновить список</button>
+        </div>
+
+        <div id="loading" class="loading">Загрузка данных...</div>
+
+        <table id="rolesTable" style="display: none;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="rolesTableBody"></tbody>
+        </table>
+    </section>
+</div>
+
+<footer>
+    <p>Role Management System © 2024</p>
+</footer>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8080';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Помечаем активную страницу в навигации
+        markActivePage();
+
+        loadRoles();
+        setupForm();
+    });
+
+    function markActivePage() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const linkPath = link.getAttribute('href');
+
+            if (currentPath === linkPath || (currentPath === '/role' && linkPath === '/role')) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    function setupForm() {
+        const form = document.getElementById('roleForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('roleId').value;
+            const name = document.getElementById('name').value;
+
+            if (!name) {
+                showMessage('Название должности обязательно', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Сохранение...';
+
+            try {
+                if (id) {
+                    // Обновление существующей должности
+                    const roleData = {
+                        id: parseInt(id),
+                        name: name
+                    };
+                    await updateRole(roleData);
+                } else {
+                    // Добавление новой должности
+                    const roleData = {
+                        name: name
+                    };
+                    await createRole(roleData);
+                }
+
+                clearForm();
+                loadRoles();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showMessage('Ошибка при сохранении: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = id ? 'Обновить должность' : 'Добавить должность';
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', clearForm);
+    }
+
+    async function loadRoles() {
+        const loading = document.getElementById('loading');
+        const table = document.getElementById('rolesTable');
+        const tableBody = document.getElementById('rolesTableBody');
+
+        loading.style.display = 'block';
+        table.style.display = 'none';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/Role/all`);
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+            const roles = await response.json();
+
+            tableBody.innerHTML = '';
+
+            if (roles.length === 0) {
+                tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 40px;">
+                                Нет данных о должностях
+                            </td>
+                        </tr>
+                    `;
+            } else {
+                roles.forEach(role => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td class="role-id">${role.id}</td>
+                            <td>${role.name}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit-btn" onclick="editRole(${role.id})">
+                                        ✏️ Редактировать
+                                    </button>
+                                    <button class="action-btn delete-btn" onclick="deleteRole(${role.id})">
+                                        🗑️ Удалить
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            loading.style.display = 'none';
+            table.style.display = 'table';
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            loading.innerHTML = '<div class="error">Ошибка при загрузке данных</div>';
+        }
+    }
+
+    async function createRole(role) {
+        const response = await fetch(`${API_BASE_URL}/Role`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(role)
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        showMessage('Должность успешно добавлена', 'success');
+        return await response.json();
+    }
+
+    async function updateRole(role) {
+        const response = await fetch(`${API_BASE_URL}/Role`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(role)
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        showMessage('Должность успешно обновлена', 'success');
+        return await response.json();
+    }
+
+    async function deleteRole(id) {
+        if (!confirm('Вы уверены, что хотите удалить эту должность?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/Role/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            showMessage('Должность успешно удалена', 'success');
+            loadRoles();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showMessage('Ошибка при удалении: ' + error.message, 'error');
+        }
+    }
+
+    async function editRole(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/Role/${id}`);
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+            const role = await response.json();
+
+            document.getElementById('roleId').value = role.id;
+            document.getElementById('name').value = role.name;
+
+            document.getElementById('submitBtn').innerHTML = 'Обновить должность';
+            document.getElementById('submitBtn').classList.add('btn-update');
+
+            showMessage('Редактирование должности #' + role.id, 'success');
+
+            // Прокрутка к форме
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showMessage('Ошибка при загрузке должности: ' + error.message, 'error');
+        }
+    }
+
+    function clearForm() {
+        document.getElementById('roleForm').reset();
+        document.getElementById('roleId').value = '';
+        document.getElementById('submitBtn').innerHTML = 'Добавить должность';
+        document.getElementById('submitBtn').classList.remove('btn-update');
+        showMessage('Форма очищена', 'success');
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = `
+            <div class="${type}">
+                ${text}
+                <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>

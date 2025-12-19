@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление льготами</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section, .list-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-update {
+            background: #2ecc71;
+        }
+
+        .btn-update:hover {
+            background: #27ae60;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #d5f4e6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .benefit-id {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 1.2em;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-list {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        .form-section, .list-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-update {
+            background: #2ecc71;
+        }
+
+        .btn-update:hover {
+            background: #27ae60;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #e74c3c;
+            position: relative;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #d5f4e6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+            position: relative;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .employee-id {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        .refresh-btn {
+            background: #f39c12;
+        }
+
+        .refresh-btn:hover {
+            background: #e67e22;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 38px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .auth-note {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<script>
+    (async function() {
+        try {
+            const response = await fetch('/api/auth/check', {
+                credentials: 'include'
+            });
+
+            if (response.status === 401) {
+                const returnUrl = encodeURIComponent(window.location.pathname);
+                window.location.href = `https://localhost:8081/external-login`;
+                return;
+            }
+
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            const returnUrl = encodeURIComponent(window.location.pathname);
+            window.location.href = `https://localhost:8081/external-login`;
+        }
+    })();
+</script>
+<header>
+    <h1>📋 Управление льготами</h1>
+    <p>Система управления льготами сотрудников</p>
+    <nav class="nav-menu">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="http://localhost:8080/" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Сотрудники
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8080/divisions" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Подразделения
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8080/role" class="nav-link">
+                    <span class="nav-icon"></span>
+                    Должности
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8081" class="nav-link">
+                    Льготы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="http://localhost:8081/EmployeeBenefit" class="nav-link active">
+                    Льготы сотрудников
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container">
+    <section class="form-section">
+        <h2>Добавить / Редактировать льготу</h2>
+
+        <div id="message"></div>
+
+        <form id="benefitForm">
+            <input type="hidden" id="benefitId">
+
+            <div class="form-group">
+                <label for="name">Название льготы:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="addDay">Количество добавляемых к отпуску дней:</label>
+                <input type="number" id="addDay" required>
+                
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn" id="submitBtn">Добавить льготу</button>
+                <button type="button" class="btn btn-secondary" id="clearBtn">Очистить форму</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="list-section">
+        <h2>Список льгот</h2>
+
+        <div class="button-group">
+            <button class="btn" onclick="loadBenefits()">🔄 Обновить список</button>
+        </div>
+
+        <div id="loading" class="loading">Загрузка данных...</div>
+
+        <table id="benefitsTable" style="display: none;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Количество добавляемых дней</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="benefitsTableBody"></tbody>
+        </table>
+    </section>
+</div>
+
+<footer>
+    <p>Benefit Management System © 2024</p>
+</footer>
+
+<script>
+    
+    const API_BASE_URL = 'http://localhost:8081'; // !!!!!!!!!!!!!!!!!!!!!!!!
+
+        async function init() {
+            try {
+                // Пробуем получить данные пользователя
+                const response = await fetch('/Benefit/all', {
+                    credentials: 'include' // Важно для кук
+                });
+
+                if (response.status === 401) {
+                    // Редирект на страницу логина
+                    const returnUrl = encodeURIComponent(window.location.pathname);
+                    window.location.href = `https://localhost:8082/login?returnUrl=${returnUrl}`;
+                    return;
+                }
+
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                const returnUrl = encodeURIComponent(window.location.pathname);
+                window.location.href = `https://localhost:8082/login?returnUrl=${returnUrl}`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        init();
+            
+        setTimeout(() => {
+            loadBenefits();
+        },1000)
+        setupForm();
+    });
+
+    function setupForm() {
+        const form = document.getElementById('benefitForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('benefitId').value;
+            const name = document.getElementById('name').value;
+            const addDay = document.getElementById('addDay').value;
+
+            if (!name || !addDay) {
+                showMessage('Все поля обязательны для заполнения', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Сохранение...';
+
+            try {
+                if (id) {
+                    // Обновление существующей льготы
+                    await updateBenefit(id, { name, addDay });
+                } else {
+                    // Добавление новой льготы
+                    await createBenefit({ name, addDay });
+                }
+
+                clearForm();
+                loadBenefits();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showMessage('Ошибка при сохранении: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = id ? 'Обновить льготу' : 'Добавить льготу';
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', clearForm);
+    }
+
+    async function loadBenefits() {
+        const loading = document.getElementById('loading');
+        const table = document.getElementById('benefitsTable');
+        const tableBody = document.getElementById('benefitsTableBody');
+
+        loading.style.display = 'block';
+        table.style.display = 'none';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/Benefit/all`,{
+                credentials: 'include'
+            });
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+            const benefits = await response.json();
+
+            tableBody.innerHTML = '';
+
+            if (benefits.length === 0) {
+                tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px;">
+                                Нет данных о льготах
+                            </td>
+                        </tr>
+                    `;
+            } else {
+                benefits.forEach(benefit => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td class="benefit-id">${benefit.id}</td>
+                            <td>${benefit.name}</td>
+                            <td>${benefit.addDay}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit-btn" onclick="editBenefit(${benefit.id})">
+                                        ✏️ Редактировать
+                                    </button>
+                                    <button class="action-btn delete-btn" onclick="deleteBenefit(${benefit.id})">
+                                        🗑️ Удалить
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            loading.style.display = 'none';
+            table.style.display = 'table';
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            loading.innerHTML = '<div class="error">Ошибка при загрузке данных</div>';
+        }
+    }
+
+    async function createBenefit(benefit) {
+        const response = await fetch(`${API_BASE_URL}/Benefit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(benefit)
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        showMessage('Льгота успешно добавлена', 'success');
+        return await response.json();
+    }
+
+    async function updateBenefit(id, benefit) {
+        const response = await fetch(`${API_BASE_URL}/Benefit`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id, ...benefit })
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        showMessage('Льгота успешно обновлена', 'success');
+        return await response.json();
+    }
+
+    async function deleteBenefit(id) {
+        if (!confirm('Вы уверены, что хотите удалить эту льготу?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/Benefit/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            showMessage('Льгота успешно удалена', 'success');
+            loadBenefits();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showMessage('Ошибка при удалении: ' + error.message, 'error');
+        }
+    }
+
+    async function editBenefit(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/Benefit/${id}`);
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+            const benefit = await response.json();
+
+            document.getElementById('benefitId').value = benefit.id;
+            document.getElementById('name').value = benefit.name;
+            document.getElementById('addDay').value = benefit.addDay;
+
+            document.getElementById('submitBtn').innerHTML = 'Обновить льготу';
+            document.getElementById('submitBtn').classList.add('btn-update');
+
+            showMessage('Редактирование льготы #' + benefit.id, 'success');
+
+            // Прокрутка к форме
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showMessage('Ошибка при загрузке льготы: ' + error.message, 'error');
+        }
+    }
+
+    function clearForm() {
+        document.getElementById('benefitForm').reset();
+        document.getElementById('benefitId').value = '';
+        document.getElementById('submitBtn').innerHTML = 'Добавить льготу';
+        document.getElementById('submitBtn').classList.remove('btn-update');
+        showMessage('Форма очищена', 'success');
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = `<div class="${type}">${text}</div>`;
+
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 20000);
+    }
+</script>
+</body>
+</html>

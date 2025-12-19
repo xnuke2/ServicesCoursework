@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прототип структуры системы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .structure {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .block {
+            border: 2px solid;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .area-label {
+            position: absolute;
+            background: white;
+            padding: 0 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            min-height: 400px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .header-block {
+            border-color: #4b6cb7;
+            background: linear-gradient(135deg, rgba(75, 108, 183, 0.1) 0%, rgba(24, 40, 72, 0.1) 100%);
+            height: 120px;
+            position: relative;
+        }
+
+        .nav-block {
+            border-color: #9b59b6;
+            background: rgba(155, 89, 182, 0.1);
+            height: 60px;
+            margin-top: 40px;
+        }
+
+        .form-block {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+            min-height: 300px;
+        }
+
+        .list-block {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            min-height: 300px;
+        }
+
+        .input-placeholder {
+            height: 40px;
+            border: 1px dashed #666;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: #666;
+        }
+
+        .btn-placeholder {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            background: #ddd;
+            border-radius: 4px;
+            border: 1px solid #999;
+            color: #333;
+        }
+
+        .table-placeholder {
+            border: 1px dashed #666;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.7);
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 50px 150px 100px 80px;
+            gap: 10px;
+            padding: 8px;
+            margin: 5px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .table-header {
+            background: rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+
+        .mobile-note {
+            display: none;
+            background: #ffeb3b;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-note {
+                display: block;
+            }
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border: 2px solid;
+        }
+
+        .footer-block {
+            border-color: #95a5a6;
+            background: rgba(149, 165, 166, 0.1);
+            height: 50px;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    
+
+    <!-- Десктопная версия -->
+    <div class="structure">
+        <div class="area-label" style="top: -10px; left: 20px;">1</div>
+        <div class="header-block">
+            <div style="position: absolute; top: 15px; left: 15px; font-size: 24px; font-weight: bold;">
+                👥 Управление сотрудниками
+            </div>
+            <div style="position: absolute; top: 50px; left: 15px; color: #555;">
+                Система управления данными сотрудников компании
+            </div>
+        </div>
+
+        <div class="area-label" style="top: 140px; left: 20px;"> 2</div>
+        <div class="nav-block">
+            <div style="display: flex; gap: 15px; padding: 15px;">
+                <div class="btn-placeholder" style="background: rgba(75, 108, 183, 0.2);">👥 Сотрудники</div>
+                <div class="btn-placeholder" style="background: rgba(155, 89, 182, 0.2);">🏢 Подразделения</div>
+                <div class="btn-placeholder" style="background: rgba(39, 174, 96, 0.2);">💼 Должности</div>
+            </div>
+        </div>
+
+        <div class="mobile-note">📱 На мобильных: Grid превращается в одну колонку</div>
+        
+        <div class="grid">
+            <!-- Левая колонка - Форма -->
+            <div>
+                <div class="area-label" style="top: 260px; left: 40px;">3</div>
+                <div class="form-block">
+                    <div style="margin: 10px; font-weight: bold;">Форма добавления/редактирования:</div>
+                    <div class="input-placeholder">Поле ввода 1 (например, Фамилия)</div>
+                    <div class="input-placeholder">Поле ввода 2 (например, Имя)</div>
+                    <div class="input-placeholder">Выпадающий список 1</div>
+                    <div class="input-placeholder">Выпадающий список 2</div>
+                    <div style="margin-top: 20px;">
+                        <div class="btn-placeholder" style="background: rgba(39, 174, 96, 0.3);">Сохранить</div>
+                        <div class="btn-placeholder" style="background: rgba(149, 165, 166, 0.3);">Очистить</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка - Список -->
+            <div>
+                <div class="area-label" style="top: 260px; right: 40px;">4</div>
+                <div class="list-block">
+                    <div style="margin: 10px; font-weight: bold;">Список записей:</div>
+                    <div style="margin: 10px 0;">
+                        <div class="btn-placeholder" style="background: rgba(231, 76, 60, 0.2);">Обновить список</div>
+                    </div>
+                    
+                    <div class="table-placeholder">
+                        <div class="table-row table-header">
+                            <div>ID</div>
+                            <div>Название</div>
+                            <div>Тип</div>
+                            <div>Действия</div>
+                        </div>
+                        <div class="table-row">
+                            <div>1</div>
+                            <div>Запись 1</div>
+                            <div>Тип А</div>
+                            <div>
+                                <div class="btn-placeholder" style="padding: 4px 8px; font-size: 12px;">✏️</div>
+                                <div class="btn-placeholder" style="padding: 4px 8px; font-size: 12px; background: #e74c3c; color: white;">🗑️</div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div>2</div>
+                            <div>Запись 2</div>
+                            <div>Тип Б</div>
+                            <div>
+                                <div class="btn-placeholder" style="padding: 4px 8px; font-size: 12px;">✏️</div>
+                                <div class="btn-placeholder" style="padding: 4px 8px; font-size: 12px; background: #e74c3c; color: white;">🗑️</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+</html>
