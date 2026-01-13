@@ -64,7 +64,6 @@ public async Task<IActionResult> Login([FromBody] AuthDataDto data)
         if (employee?.Role == null)
             return Unauthorized(new { Message = "User data incomplete" });
         
-        // Создаем claims для JWT
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString()),
@@ -73,8 +72,7 @@ public async Task<IActionResult> Login([FromBody] AuthDataDto data)
             new Claim("EmployeeId", employee.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-
-        // Генерация JWT токена
+        
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -88,11 +86,10 @@ public async Task<IActionResult> Login([FromBody] AuthDataDto data)
             
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
         
-        // Устанавливаем куки с JWT токеном
         Response.Cookies.Append("access_token", tokenString, new CookieOptions
         {
             HttpOnly = true,
-            Secure = !_environment.IsDevelopment(), // Для разработки false
+            Secure = !_environment.IsDevelopment(), 
             SameSite = SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddHours(2),
             Path = "/"
@@ -122,6 +119,7 @@ public async Task<IActionResult> Login([FromBody] AuthDataDto data)
         Response.Cookies.Delete("access_token");
         return Ok(new { Message = "Logged out successfully" });
     }
+    
     [Authorize(Roles = "Сотрудник кадровой службы")]
     [HttpGet("/au")]
     public IActionResult Au()
